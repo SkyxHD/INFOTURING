@@ -11,11 +11,37 @@ This project implements a visual Turing machine simulator that demonstrates how 
 - **Input**: `1011` (11 in decimal)
 - **Output**: `1100` (12 in decimal)
 
+#### Visual Example
+
+```
+Initial:  _ [1] 0  1  1  _  _  _
+             ↑
+          (HEAD, State: start)
+
+Final:    _  1 [1] 0  0  _  _  _
+                ↑
+          (HEAD, State: halt)
+
+Result: 1011 + 1 = 1100 (11 + 1 = 12) ✓
+```
+
 The machine uses the following states:
 - `start`: Moves to the rightmost digit of the binary number
 - `carry`: Handles the carry operation (changes 1→0, moves left)
 - `write1`: Writes 1 when carry is resolved
 - `halt`: Final state
+
+## Screenshots
+
+### Initial State
+![Initial State](https://github.com/user-attachments/assets/4d28500e-fee8-49c2-9971-44aeb6e90096)
+
+*Machine at start with input 1011 (11 in decimal)*
+
+### Final State
+![Final State](https://github.com/user-attachments/assets/cba51a76-637e-40e9-9fa9-fe26464c09cf)
+
+*Machine halted with output 1100 (12 in decimal) - successfully incremented!*
 
 ## Features
 
