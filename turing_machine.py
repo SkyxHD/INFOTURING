@@ -8,12 +8,15 @@ Example Machine: Binary Increment
 - Output: Binary number + 1 (e.g., "1100" = 12 in decimal)
 """
 
-import pygame
 import sys
 from typing import Dict, Tuple, List
 
-# Initialize Pygame
-pygame.init()
+# Pygame import is deferred until needed to avoid issues in headless environments
+try:
+    import pygame
+    PYGAME_AVAILABLE = True
+except ImportError:
+    PYGAME_AVAILABLE = False
 
 # Constants
 WINDOW_WIDTH = 1200
@@ -123,6 +126,12 @@ class TuringMachineVisualizer:
     """Visualizes the Turing Machine execution."""
     
     def __init__(self):
+        if not PYGAME_AVAILABLE:
+            raise ImportError("Pygame is required for visualization. Install it with: pip install pygame")
+        
+        # Initialize Pygame
+        pygame.init()
+        
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("Turing Machine - Binary Increment")
         self.clock = pygame.time.Clock()
@@ -301,6 +310,11 @@ class TuringMachineVisualizer:
 
 def main():
     """Entry point."""
+    if not PYGAME_AVAILABLE:
+        print("Error: Pygame is required to run the visual simulation.")
+        print("Please install it with: pip install pygame")
+        sys.exit(1)
+    
     visualizer = TuringMachineVisualizer()
     visualizer.run()
 

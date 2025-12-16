@@ -3,15 +3,17 @@
 Demo script that runs the Turing machine and takes screenshots
 """
 
-import pygame
 import sys
 import os
 
-# Set display
+# Set display for headless mode
 os.environ['SDL_VIDEODRIVER'] = 'dummy'
 
-# Import after setting display
-from typing import Dict, Tuple, List
+# Import pygame after setting display
+import pygame
+
+# Import TuringMachine from main module
+from turing_machine import TuringMachine
 
 # Initialize Pygame
 pygame.init()
@@ -31,54 +33,6 @@ RED = (255, 69, 69)
 GRAY = (200, 200, 200)
 LIGHT_BLUE = (173, 216, 255)
 YELLOW = (255, 255, 150)
-
-
-class TuringMachine:
-    def __init__(self):
-        self.tape: List[str] = ['_', '1', '0', '1', '1', '_', '_', '_']
-        self.head_position: int = 1
-        self.current_state: str = 'start'
-        
-        self.transitions: Dict[Tuple[str, str], Tuple[str, str, str]] = {
-            ('start', '0'): ('start', '0', 'R'),
-            ('start', '1'): ('start', '1', 'R'),
-            ('start', '_'): ('carry', '_', 'L'),
-            ('carry', '0'): ('write1', '1', 'N'),
-            ('carry', '1'): ('carry', '0', 'L'),
-            ('carry', '_'): ('write1', '1', 'N'),
-            ('write1', '0'): ('halt', '1', 'N'),
-            ('write1', '1'): ('halt', '1', 'N'),
-            ('write1', '_'): ('halt', '1', 'N'),
-        }
-        
-        self.halted = False
-        self.step_count = 0
-    
-    def step(self) -> bool:
-        if self.halted or self.current_state == 'halt':
-            self.halted = True
-            return False
-        
-        current_symbol = self.tape[self.head_position]
-        key = (self.current_state, current_symbol)
-        
-        if key not in self.transitions:
-            self.halted = True
-            return False
-        
-        new_state, write_symbol, direction = self.transitions[key]
-        self.tape[self.head_position] = write_symbol
-        self.current_state = new_state
-        
-        if direction == 'L':
-            self.head_position = max(0, self.head_position - 1)
-        elif direction == 'R':
-            self.head_position = min(len(self.tape) - 1, self.head_position + 1)
-            if self.head_position >= len(self.tape) - 1:
-                self.tape.append('_')
-        
-        self.step_count += 1
-        return True
 
 
 def draw_visualization(screen, machine, step_num):

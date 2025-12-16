@@ -4,78 +4,23 @@ Test script for Turing Machine logic (without GUI)
 """
 
 import sys
-sys.path.insert(0, '/home/runner/work/INFOTURING/INFOTURING')
 
-# Import just the TuringMachine class without pygame
-from typing import Dict, Tuple, List
+# Import the TuringMachine class from the main module
+from turing_machine import TuringMachine
 
 
-class TuringMachine:
-    """
-    A Turing Machine implementation for binary increment.
-    """
-    
-    def __init__(self):
-        self.tape: List[str] = ['_', '1', '0', '1', '1', '_', '_', '_']
-        self.head_position: int = 1  # Start at first digit
-        self.current_state: str = 'start'
-        
-        self.transitions: Dict[Tuple[str, str], Tuple[str, str, str]] = {
-            ('start', '0'): ('start', '0', 'R'),
-            ('start', '1'): ('start', '1', 'R'),
-            ('start', '_'): ('carry', '_', 'L'),
-            ('carry', '0'): ('write1', '1', 'N'),
-            ('carry', '1'): ('carry', '0', 'L'),
-            ('carry', '_'): ('write1', '1', 'N'),
-            ('write1', '0'): ('halt', '1', 'N'),
-            ('write1', '1'): ('halt', '1', 'N'),
-            ('write1', '_'): ('halt', '1', 'N'),
-        }
-        
-        self.halted = False
-        self.step_count = 0
-    
-    def step(self) -> bool:
-        """Execute one step of the Turing machine. Returns True if machine continues."""
-        if self.halted or self.current_state == 'halt':
-            self.halted = True
-            return False
-        
-        current_symbol = self.tape[self.head_position]
-        
-        key = (self.current_state, current_symbol)
-        if key not in self.transitions:
-            self.halted = True
-            return False
-        
-        new_state, write_symbol, direction = self.transitions[key]
-        
-        self.tape[self.head_position] = write_symbol
-        self.current_state = new_state
-        
-        if direction == 'L':
-            self.head_position = max(0, self.head_position - 1)
-        elif direction == 'R':
-            self.head_position = min(len(self.tape) - 1, self.head_position + 1)
-            if self.head_position >= len(self.tape) - 1:
-                self.tape.append('_')
-        
-        self.step_count += 1
-        
-        return True
-    
-    def get_binary_number(self) -> str:
-        """Extract the binary number from the tape."""
-        # Find first and last non-blank symbols
-        result = []
-        found_digit = False
-        for symbol in self.tape:
-            if symbol in ['0', '1']:
-                found_digit = True
-                result.append(symbol)
-            elif found_digit and symbol == '_':
-                break
-        return ''.join(result)
+def get_binary_number(tape):
+    """Extract the binary number from the tape."""
+    # Find first and last non-blank symbols
+    result = []
+    found_digit = False
+    for symbol in tape:
+        if symbol in ['0', '1']:
+            found_digit = True
+            result.append(symbol)
+        elif found_digit and symbol == '_':
+            break
+    return ''.join(result)
 
 
 def test_binary_increment():
@@ -86,7 +31,7 @@ def test_binary_increment():
     machine = TuringMachine()
     
     # Get initial number
-    initial = machine.get_binary_number()
+    initial = get_binary_number(machine.tape)
     initial_decimal = int(initial, 2) if initial else 0
     print(f"Initial tape: {' '.join(machine.tape[:8])}")
     print(f"Initial binary: {initial} (decimal: {initial_decimal})")
@@ -110,7 +55,7 @@ def test_binary_increment():
     print(f"Machine halted after {machine.step_count} steps")
     
     # Get final number
-    final = machine.get_binary_number()
+    final = get_binary_number(machine.tape)
     final_decimal = int(final, 2) if final else 0
     print(f"Final tape: {' '.join(machine.tape[:8])}")
     print(f"Final binary: {final} (decimal: {final_decimal})")
@@ -144,13 +89,13 @@ def test_multiple_cases():
         machine = TuringMachine()
         machine.tape = initial_tape.copy()
         
-        initial = machine.get_binary_number()
+        initial = get_binary_number(machine.tape)
         initial_decimal = int(initial, 2) if initial else 0
         
         while machine.step() and machine.step_count < 100:
             pass
         
-        final = machine.get_binary_number()
+        final = get_binary_number(machine.tape)
         final_decimal = int(final, 2) if final else 0
         
         expected = initial_decimal + 1
